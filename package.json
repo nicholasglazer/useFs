@@ -1,0 +1,22 @@
+{
+  "name": "@use-fs",
+  "version": "0.0.1",
+  "description": "Web based file-system",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nicholasglazer/useFs.git"
+  },
+  "keywords": [
+    "filesystem",
+    "file-system",
+    "fs",
+    "react",
+    "zustand"
+  ],
+  "author": "Nicholas Glazer <glazer.nicholas@google.com> (http://nicholasglazer.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nicholasglazer/useFs/issues"
+  },
+  "homepage": "https://github.com/nicholasglazer/useFs#readme",
+}

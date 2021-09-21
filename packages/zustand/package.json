@@ -1,0 +1,27 @@
+{
+  "name": "@use-fs/zustand",
+  "version": "0.0.1",
+  "description": "Zustand slice with base file-system",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nicholasglazer/useFs.git",
+    "directory": "packages/zustand"
+  },
+  "keywords": [
+    "filesystem",
+    "file-system",
+    "fs",
+    "react",
+    "zustand",
+    "slice"
+  ],
+  "author": "Nicholas Glazer <glazer.nicholas@google.com> (http://nicholasglazer.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nicholasglazer/useFs/issues"
+  },
+  "homepage": "https://github.com/nicholasglazer/useFs#readme",
+  "dependencies": {
+    "uuid": "^8.3.2"
+  }
+}

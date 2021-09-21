@@ -1,0 +1,22 @@
+{
+  "name": "@use-fs/core",
+  "version": "0.0.1",
+  "description": "Javascript file-system base functions",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nicholasglazer/useFs.git",
+    "directory": "packages/core"
+  },
+  "keywords": [
+    "filesystem",
+    "file-system",
+    "fs",
+    "javascript"
+  ],
+  "author": "Nicholas Glazer <glazer.nicholas@google.com> (http://nicholasglazer.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nicholasglazer/useFs/issues"
+  },
+  "homepage": "https://github.com/nicholasglazer/useFs#readme"
+}
