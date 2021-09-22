@@ -1,6 +1,6 @@
 {
   "name": "@use-fs/zustand",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Zustand slice with base file-system",
   "repository": {
     "type": "git",

@@ -20,9 +20,9 @@ export const initialState = {
 };
 
 // TODO reduce computation complexity e.g ( use new Set() instead of Object.fromEntries )
-export const createFileSystemSlice = (set, get) => ({
-  fs: initialState,
-  clearFs: () => set((state) => ({fs: initialState})),
+export const createFileSystemSlice = (set, get, extendedInitialState = initialState) => ({
+  fs: extendedInitialState,
+  clearFs: () => set((state) => ({fs: extendedInitialState})),
   saveIdToDirContents: (id, destId, dirContents = 'dirContents' ) => {
     set((state) => ({
       fs: {
