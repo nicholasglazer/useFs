@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 
 const getCurrentTimeStamp = () => +new Date();
-const fileSystem = {
+export const initialState = {
   files: {},
   folders: {},
   dirContents: { root: [] },
@@ -20,9 +20,9 @@ const fileSystem = {
 };
 
 // TODO reduce computation complexity e.g ( use new Set() instead of Object.fromEntries )
-const fileSystemSlice = (set, get) => ({
-  fs: fileSystem,
-  clearFs: () => set((state) => ({fs: fileSystem})),
+export const createFileSystemSlice = (set, get) => ({
+  fs: initialState,
+  clearFs: () => set((state) => ({fs: initialState})),
   saveIdToDirContents: (id, destId, dirContents = 'dirContents' ) => {
     set((state) => ({
       fs: {
@@ -201,5 +201,3 @@ const fileSystemSlice = (set, get) => ({
     get().setCurrentDirItems(get().fs.currentDir);
   },
 });
-
-export default fileSystemSlice;
