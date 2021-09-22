@@ -23,26 +23,26 @@ const fileSystem = {
 const fileSystemSlice = (set, get) => ({
   fs: fileSystem,
   clearFs: () => set((state) => ({fs: fileSystem})),
-  saveIdToDirContents: (id, destId) => {
+  saveIdToDirContents: (id, destId, dirContents = 'dirContents' ) => {
     set((state) => ({
       fs: {
         ...state.fs,
-        dirContents: {
-          ...state.fs.dirContents,
-          [destId]: [...state.fs.dirContents[destId], id],
+        [dirContents]: {
+          ...state.fs.[dirContents],
+          [destId]: [...state.fs.[dirContents][destId], id],
         },
       },
     }));
     get().setCurrentDirItems(get().fs.currentDir);
   },
-  rmIdFromDirContents: (id) => {
+  rmIdFromDirContents: (id, dirContents = 'dirContents') => {
     set((state) => ({
       fs: {
         ...state.fs,
-        dirContents: {
-          ...state.fs.dirContents,
+        [dirContents]: {
+          ...state.fs.[dirContents],
           [state.fs.currentDir]: [
-            ...state.fs.dirContents[state.fs.currentDir].filter(
+            ...state.fs.[dirContents][state.fs.currentDir].filter(
               (x) => x !== id
             ),
           ],
@@ -60,14 +60,14 @@ const fileSystemSlice = (set, get) => ({
       },
     }));
   },
-  rmFolderRecur: (id) => {
-    if (get().fs.dirContents[id]) {
-      for (const uuid of get().fs.dirContents[id]) {
+  rmFolderRecur: (id, dirContents = "dirContents") => {
+    if (get().fs.[dirContents][id]) {
+      for (const uuid of get().fs.[dirContents][id]) {
         get().filterIdFromCollection(uuid, "folders");
         get().filterIdFromCollection(uuid, "files");
-        if (get().fs.dirContents[uuid]) {
+        if (get().fs.[dirContents][uuid]) {
           get().rmFolderRecur(uuid);
-          get().filterIdFromCollection(uuid, "dirContents");
+          get().filterIdFromCollection(uuid, dirContents);
         }
       }
     }
@@ -123,30 +123,30 @@ const fileSystemSlice = (set, get) => ({
   setItemPreview: (item, isOpen) => set((state) => ({ fs: { ...state.fs, previewedItem: { item, isOpen } }})),
   setDestinationContainerId: (id) => set((state) => ({ fs: { ...state.fs, destinationContainerId: id } })),
   setCurrentDir: (id) => set((state) => ({ fs: { ...state.fs, currentDir: id } })),
-  setCurrentDirItems: (currentFolderId = "root") => {
+  setCurrentDirItems: (currentFolderId = "root",  dirContents = "dirContents") => {
     set((state) => ({
       fs: {
         ...state.fs,
         currentDirItems: {
-          folders: [...state.fs.dirContents[currentFolderId].map(
+          folders: [...state.fs.[dirContents][currentFolderId].map(
             (id) => state.fs.folders[id]
           ).filter(Boolean)],
-          files: [...state.fs.dirContents[currentFolderId].map(
+          files: [...state.fs.[dirContents][currentFolderId].map(
             (id) => state.fs.files[id]
           ).filter(Boolean)],
           mixed: [
-            ...state.fs.dirContents[currentFolderId].map(
+            ...state.fs.[dirContents][currentFolderId].map(
               (id) => state.fs.folders[id]
             ).filter(Boolean),
-            ...state.fs.dirContents[currentFolderId].map(
+            ...state.fs.[dirContents][currentFolderId].map(
               (id) => state.fs.files[id]
             ).filter(Boolean),
-          ]
+          ],
         },
       },
     }));
   },
-  mkdir: (name, isPrivate = true, destId) => {
+  mkdir: (name, isPrivate = false, destId, dirContents = "dirContents") => {
     const id = uuidv4();
     set((state) => ({
       fs: {
@@ -161,7 +161,7 @@ const fileSystemSlice = (set, get) => ({
             private: isPrivate,
           },
         },
-        dirContents: { ...state.fs.dirContents, [id]: [] },
+        [dirContents]: { ...state.fs.[dirContents], [id]: [], },
       },
     }));
     get().saveIdToDirContents(id, destId || get().fs.currentDir);
@@ -175,11 +175,11 @@ const fileSystemSlice = (set, get) => ({
     }));
     get().saveIdToDirContents(item.id, destId || get().fs.currentDir);
   },
-  rm: (id) => {
+  rm: (id, dirContents = "dirContents") => {
     get().rmFolderRecur(id);
     get().filterIdFromCollection(id, "folders");
     get().filterIdFromCollection(id, "files");
-    get().filterIdFromCollection(id, "dirContents");
+    get().filterIdFromCollection(id, dirContents);
     get().rmIdFromDirContents(id);
     get().setCurrentDirItems(get().fs.currentDir);
   },
