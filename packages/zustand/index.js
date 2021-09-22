@@ -146,48 +146,47 @@ export const createFileSystemSlice = (set, get, extendedInitialState = initialSt
       },
     }));
   },
-  mkdir: (name, isPrivate = false, destId, dirContents = "dirContents") => {
+  mkdir: (name, destId, dirContents = "dirContents", object) => {
     const id = uuidv4();
     set((state) => ({
       fs: {
         ...state.fs,
         folders: {
           ...state.fs.folders,
-          [id]: {
+          [id]: object || {
             id,
             name,
             fsType: "folder",
             lastModified: getCurrentTimeStamp(),
-            private: isPrivate,
           },
         },
         [dirContents]: { ...state.fs.[dirContents], [id]: [], },
       },
     }));
-    get().saveIdToDirContents(id, destId || get().fs.currentDir);
+    get().saveIdToDirContents(id, destId || get().fs.currentDir, dirContents);
   },
-  touch: (item, destId) => {
+  touch: (item, destId, dirContents = "dirContents") => {
     set((state) => ({
       fs: {
         ...state.fs,
         files: { ...state.fs.files, [item.id]: item },
       },
     }));
-    get().saveIdToDirContents(item.id, destId || get().fs.currentDir);
+    get().saveIdToDirContents(item.id, destId || get().fs.currentDir, dirContents);
   },
   rm: (id, dirContents = "dirContents") => {
     get().rmFolderRecur(id);
     get().filterIdFromCollection(id, "folders");
     get().filterIdFromCollection(id, "files");
     get().filterIdFromCollection(id, dirContents);
-    get().rmIdFromDirContents(id);
-    get().setCurrentDirItems(get().fs.currentDir);
+    get().rmIdFromDirContents(id, dirContents);
+    get().setCurrentDirItems(get().fs.currentDir, dirContents);
   },
-  mv: (id, destId) => {
-    get().rmIdFromDirContents(id);
-    get().saveIdToDirContents(id, destId);
+  mv: (id, destId, dirContents = "dirContents") => {
+    get().rmIdFromDirContents(id, dirContents);
+    get().saveIdToDirContents(id, destId, dirContents);
   },
-  rename: (id, name, type) => {
+  rename: (id, name, type, dirContents = "dirContents") => {
     console.log('id name type', id, name, type)
     set((state) => ({
       fs: {
@@ -198,6 +197,6 @@ export const createFileSystemSlice = (set, get, extendedInitialState = initialSt
         },
       },
     }));
-    get().setCurrentDirItems(get().fs.currentDir);
+    get().setCurrentDirItems(get().fs.currentDir, dirContents);
   },
 });
