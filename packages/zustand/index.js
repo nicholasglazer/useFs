@@ -33,7 +33,7 @@ export const createFileSystemSlice = (set, get, extendedInitialState = initialSt
         },
       },
     }));
-    get().setCurrentDirItems(get().fs.currentDir);
+    get().setCurrentDirItems(get().fs.currentDir, dirContents);
   },
   rmIdFromDirContents: (id, dirContents = 'dirContents') => {
     set((state) => ({
@@ -158,6 +158,7 @@ export const createFileSystemSlice = (set, get, extendedInitialState = initialSt
             name,
             fsType: "folder",
             lastModified: getCurrentTimeStamp(),
+            origin: dirContents,
           },
         },
         [dirContents]: { ...state.fs.[dirContents], [id]: [], },
