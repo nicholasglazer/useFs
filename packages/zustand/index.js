@@ -11,12 +11,13 @@ export const initialState = {
     files: [],
     mixed: [],
   },
-  previewListToUpload: [],
+  uploadCandidates: [],
   previewedItem: {
     item: null,
     isOpen: false,
   },
   destinationContainerId: "root",
+  trash: [],
 };
 
 // TODO reduce computation complexity e.g ( use new Set() instead of Object.fromEntries )
@@ -72,52 +73,85 @@ export const createFileSystemSlice = (set, get, extendedInitialState = initialSt
       }
     }
   },
-  rmUploadPreview: (index) => {
+  clearUploadCandidates:(index) => {
     console.log('index value', index)
     set((state) => ({
       fs: {
         ...state.fs,
-        previewListToUpload: index !== null ? [
-          ...state.fs.previewListToUpload.filter((x, idx) => idx !== index),
+        uploadCandidates: []
+      },
+    }))
+  },
+  rmUploadCandidate: (index) => {
+    console.log('index value', index)
+    set((state) => ({
+      fs: {
+        ...state.fs,
+        uploadCandidates: index !== null ? [
+          ...state.fs.uploadCandidates.filter((x, idx) => idx !== index),
         ] : [],
       },
     }))
   },
-  setUploadPreview: async (file, isBase64 = true) => {
+  setUploadCandidate: (fileObject) => {
+    set((state) => ({
+      fs: {
+        ...state.fs,
+        uploadCandidates: [
+          ...state.fs.uploadCandidates,
+          fileObject
+        ],
+      },
+    }));
+  },
+  // TODO seperate concerns, refactor?
+  // file::File(Blob)
+  setLocalFiles: async (
+    file,
+    destination,
+    dirContents = 'dirContents',
+    isBase64 = true,
+    isBlob = true,
+    isPrivate = false,
+    isLocal = true
+  ) => {
     const id = uuidv4();
-    let reader = new FileReader();
-    await reader.readAsDataURL(file);
-    reader.onload = function () {
-      console.log(reader.result);
-      const base64 = reader.result;
-      set((state) => ({
-        fs: {
-          ...state.fs,
-          previewListToUpload: [
-            ...state.fs.previewListToUpload,
-            {
-              fileBlob: file,
-              fileObj: {
-                id,
-                lastModified: getCurrentTimeStamp(),
-                deviceModified: file.lastModified,
-                name: file.name,
-                type: file.type,
-                size: file.size,
-                webkitRelativePath: file.webkitRelativePath,
-                fsType: "file",
-                isPrivate: false,
-              },
-              base64: isBase64 && base64,
-              status: "ready",
-              progress: 0,
-            },
-          ],
-        },
-      }));
+    const fileObject = {
+      fileObj: {
+        id,
+        lastModified: getCurrentTimeStamp(),
+        deviceModified: file.lastModified,
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        webkitRelativePath: file.webkitRelativePath,
+        fsType: "file",
+      },
+      isPrivate: isPrivate,
+      isLocal: isLocal,
+      status: "ready",
+      progress: 0,
     };
-    reader.onerror = function (error) {
-      console.log('Error: ', error);
+    if (isBase64) {
+      let reader = new FileReader();
+      await reader.readAsDataURL(file);
+      reader.onload = () => {
+        get().touch(
+          {...fileObject, base64: reader.result, fileBlob: isBlob && file},
+          destination,
+          dirContents
+        );
+        // files will also be stored in uploadCandidates::[]
+        get().setUploadCandidate({...fileObject, base64: reader.result, fileBlob: isBlob && file})
+      };
+      reader.onerror = (error) => console.warn('setUploadPreview() | Error: ', error);
+    } else {
+      get().touch(
+        {...fileObject, base64: null, fileBlob: isBlob && file},
+        destination,
+        dirContents
+      );
+      get().setUploadCandidate({...fileObject, base64: null, fileBlob: isBlob && file})
     };
   },
   setItemPreview: (item, isOpen) => set((state) => ({ fs: { ...state.fs, previewedItem: { item, isOpen } }})),
