@@ -29,8 +29,8 @@ export const createFileSystemSlice = (set, get, extendedInitialState = initialSt
       fs: {
         ...state.fs,
         [dirContents]: {
-          ...state.fs.[dirContents],
-          [destId]: [...state.fs.[dirContents][destId], id],
+          ...state.fs[dirContents],
+          [destId]: [...state.fs[dirContents][destId], id],
         },
       },
     }));
@@ -41,9 +41,9 @@ export const createFileSystemSlice = (set, get, extendedInitialState = initialSt
       fs: {
         ...state.fs,
         [dirContents]: {
-          ...state.fs.[dirContents],
+          ...state.fs[dirContents],
           [state.fs.currentDir]: [
-            ...state.fs.[dirContents][state.fs.currentDir].filter(
+            ...state.fs[dirContents][state.fs.currentDir].filter(
               (x) => x !== id
             ),
           ],
@@ -62,11 +62,11 @@ export const createFileSystemSlice = (set, get, extendedInitialState = initialSt
     }));
   },
   rmFolderRecur: (id, dirContents = "dirContents") => {
-    if (get().fs.[dirContents][id]) {
-      for (const uuid of get().fs.[dirContents][id]) {
+    if (get().fs[dirContents][id]) {
+      for (const uuid of get().fs[dirContents][id]) {
         get().filterIdFromCollection(uuid, "folders");
         get().filterIdFromCollection(uuid, "files");
-        if (get().fs.[dirContents][uuid]) {
+        if (get().fs[dirContents][uuid]) {
           get().rmFolderRecur(uuid);
           get().filterIdFromCollection(uuid, dirContents);
         }
@@ -163,17 +163,17 @@ export const createFileSystemSlice = (set, get, extendedInitialState = initialSt
       fs: {
         ...state.fs,
         currentDirItems: {
-          folders: [...state.fs.[dirContents][currentFolderId].map(
+          folders: [...state.fs[dirContents][currentFolderId].map(
             (id) => state.fs.folders[id]
           ).filter(Boolean)],
-          files: [...state.fs.[dirContents][currentFolderId].map(
+          files: [...state.fs[dirContents][currentFolderId].map(
             (id) => state.fs.files[id]
           ).filter(Boolean)],
           mixed: [
-            ...state.fs.[dirContents][currentFolderId].map(
+            ...state.fs[dirContents][currentFolderId].map(
               (id) => state.fs.folders[id]
             ).filter(Boolean),
-            ...state.fs.[dirContents][currentFolderId].map(
+            ...state.fs[dirContents][currentFolderId].map(
               (id) => state.fs.files[id]
             ).filter(Boolean),
           ],
@@ -200,7 +200,7 @@ export const createFileSystemSlice = (set, get, extendedInitialState = initialSt
           ...state.fs.folders,
           [id]: dirObj
         },
-        [dirContents]: { ...state.fs.[dirContents], [id]: [], },
+        [dirContents]: { ...state.fs[dirContents], [id]: [], },
       },
     }));
     get().saveIdToDirContents(id, destId || get().fs.currentDir, dirContents);
